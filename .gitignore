@@ -18,6 +18,9 @@ target/
 *.iws
 *.iml
 *.ipr
+filmorate.pdf
+filmorate.sql
+
 
 ### NetBeans ###
 /nbproject/private/

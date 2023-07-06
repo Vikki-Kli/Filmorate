@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class User {
 
@@ -19,10 +17,10 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
+    private Map<Long, Boolean> friendship = new HashMap<>();
 
-    public Set<Long> getFriends() {
-        return friends;
+    public Collection<Long> getFriends() {
+        return friendship.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();
     }
 
     public long getId() {
@@ -46,11 +44,16 @@ public class User {
     }
 
     public void addFriend(long id) {
-        friends.add(id);
+        friendship.put(id, false);
+    }
+
+    public void editFriendshipStatus(long id) {
+        if (!friendship.get(id)) friendship.put(id, true);
+        else friendship.put(id, false);
     }
 
     public void deleteFriend(long id) {
-        friends.remove(id);
+        friendship.remove(id);
     }
 
     public void setId(long id) {

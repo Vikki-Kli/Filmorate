@@ -45,14 +45,19 @@ public class UserService {
     }
 
     public void deleteFriend(long userId, long friendId) throws NoSuchUserException {
+        userStorage.getUser(userId);
+        userStorage.getUser(friendId);
         userStorage.getUser(userId).deleteFriend(friendId);
-        userStorage.getUser(friendId).deleteFriend(userId);
+        if (userStorage.getUser(friendId).getFriends().contains(userId)) userStorage.getUser(friendId).editFriendshipStatus(userId);
     }
 
     public void addFriend(long userId, long friendId) throws NoSuchUserException {
         userStorage.getUser(userId);
         userStorage.getUser(friendId);
         userStorage.getUser(userId).addFriend(friendId);
-        userStorage.getUser(friendId).addFriend(userId);
+        if (userStorage.getUser(friendId).getFriends().contains(userId)) {
+            userStorage.getUser(userId).editFriendshipStatus(friendId);
+            userStorage.getUser(friendId).editFriendshipStatus(userId);
+        }
     }
 }

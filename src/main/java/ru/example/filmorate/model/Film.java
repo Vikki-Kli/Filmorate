@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,8 +20,10 @@ public class Film {
     @NotNull
     private LocalDate releaseDate;
     @Positive
-    private Duration duration;
-    private final Collection<Long> likes = new HashSet<>();
+    private Integer duration;
+    private Collection<Long> likes = new HashSet<>();
+    private Collection<Genre> genres = new HashSet<>();
+    private Mpa mpa;
 
     public long getId() {
         return id;
@@ -40,8 +41,24 @@ public class Film {
         return releaseDate;
     }
 
-    public Duration getDuration() {
+    public Mpa getMpa() {
+        return mpa;
+    }
+
+    public Integer getDuration() {
         return duration;
+    }
+
+    public Collection<Genre> getGenres() {
+        return genres;
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void removeGenre(Genre genre) {
+        genres.remove(genre);
     }
 
     public Collection<Long> getLikes() {
@@ -72,8 +89,12 @@ public class Film {
         this.releaseDate = releaseDate;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public void setMpa(Mpa mpa) {
+        this.mpa = mpa;
     }
 
     @Override

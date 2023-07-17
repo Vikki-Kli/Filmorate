@@ -1,6 +1,7 @@
 package ru.example.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.example.filmorate.exception.NoSuchUserException;
 import ru.example.filmorate.model.User;
@@ -14,11 +15,11 @@ public class UserService {
     private UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    public Collection<User> findAll() {
+    public Collection<User> findAll() throws NoSuchUserException {
         return userStorage.findAll();
     }
 
@@ -30,34 +31,27 @@ public class UserService {
         return userStorage.create(user);
     }
 
-    public User edit(User user, long id) throws Exception {
+    public User edit(User user, long id) throws NoSuchUserException {
         return userStorage.edit(user, id);
     }
 
     public Collection<User> getFriends(long id) throws NoSuchUserException {
-        return userStorage.getUsers(userStorage.getUser(id).getFriends());
+        return userStorage.getFriends(id);
     }
 
     public Collection<User> getMutualFriends(long id1, long id2) throws NoSuchUserException {
-        Collection<User> friends1 = getFriends(id1);
-        Collection<User> friends2 = getFriends(id2);
-        return friends1.stream().filter(friends2::contains).toList();
+        return userStorage.getMutualFriends(id1, id2);
     }
 
     public void deleteFriend(long userId, long friendId) throws NoSuchUserException {
-        userStorage.getUser(userId);
-        userStorage.getUser(friendId);
-        userStorage.getUser(userId).deleteFriend(friendId);
-        if (userStorage.getUser(friendId).getFriends().contains(userId)) userStorage.getUser(friendId).editFriendshipStatus(userId);
+        userStorage.deleteFriend(userId, friendId);
     }
 
     public void addFriend(long userId, long friendId) throws NoSuchUserException {
-        userStorage.getUser(userId);
-        userStorage.getUser(friendId);
-        userStorage.getUser(userId).addFriend(friendId);
-        if (userStorage.getUser(friendId).getFriends().contains(userId)) {
-            userStorage.getUser(userId).editFriendshipStatus(friendId);
-            userStorage.getUser(friendId).editFriendshipStatus(userId);
-        }
+        userStorage.addFriend(userId, friendId);
+    }
+
+    public void delete(long id) throws NoSuchUserException {
+        userStorage.deleteUser(id);
     }
 }

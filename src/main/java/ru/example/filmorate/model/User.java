@@ -14,10 +14,21 @@ public class User {
     private String email;
     @NotBlank
     private String login;
+    @NotBlank
     private String name;
     @Past
     private LocalDate birthday;
     private Map<Long, Boolean> friendship = new HashMap<>();
+
+    public User(){}
+    public User(long id, String email, String login, String name, LocalDate birthday, Map<Long, Boolean> friendship) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+        this.friendship = friendship;
+    }
 
     public Collection<Long> getFriends() {
         return friendship.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList();

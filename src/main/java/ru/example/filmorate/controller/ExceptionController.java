@@ -9,6 +9,7 @@ import ru.example.filmorate.exception.NoSuchFilmException;
 import ru.example.filmorate.exception.NoSuchUserException;
 import ru.example.filmorate.exception.ValidationFilmException;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -17,7 +18,7 @@ public class ExceptionController {
     @ExceptionHandler({ValidationFilmException.class, ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> validationFilmExceptionHandler(Exception e) {
-        return Map.of("error: ", e.getMessage());
+        return Map.of(e.getMessage(), Arrays.toString(e.getStackTrace()));
     }
 
     @ExceptionHandler({NoSuchUserException.class, NoSuchFilmException.class})

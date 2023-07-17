@@ -1,7 +1,6 @@
 package ru.example.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.example.filmorate.exception.NoSuchUserException;
 import ru.example.filmorate.model.User;
@@ -15,13 +14,12 @@ public class UserController {
 
     private UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping()
-    public Collection<User> findAll() {
+    public Collection<User> findAll() throws NoSuchUserException {
         return userService.findAll();
     }
 
@@ -46,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User edit(@Valid @RequestBody User user, @PathVariable long id) throws Exception {
+    public User edit(@Valid @RequestBody User user, @PathVariable long id) throws NoSuchUserException {
         return userService.edit(user, id);
     }
 
@@ -58,5 +56,10 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable long id, @PathVariable long friendId) throws NoSuchUserException {
         userService.deleteFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable long id) throws NoSuchUserException {
+        userService.delete(id);
     }
 }

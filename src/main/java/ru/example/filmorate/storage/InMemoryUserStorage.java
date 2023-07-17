@@ -33,15 +33,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User edit(User user, long id) throws Exception {
+    public User edit(User user, long id) {
         if (user.getName().isBlank()) user.setName(user.getLogin());
         if (users.containsKey(id) && (user.getId() == 0 || user.getId() == id)) {
             users.put(id, user);
             log.info("Has been edited: " + user);
-        }
-        else if (user.getId() != 0 && user.getId() != id) {
-            log.info("The ID in request body doesn't match the ID in the path");
-            throw new Exception("The ID in request body must match the ID in the path");
         }
         else {
             log.info("NoSuchUserException, id " + id);
@@ -50,7 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public User getUser(long id) throws NoSuchUserException {
+    public User getUser(long id) {
         if (!users.containsKey(id)) throw new NoSuchUserException("User with required id is not found");
         return users.get(id);
     }
@@ -58,5 +54,43 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Collection<User> getUsers(Collection<Long> friendsId) {
         return friendsId.stream().map(users::get).toList();
+    }
+
+    @Override
+    public void deleteUser(long id) {
+        users.remove(id);
+    }
+
+    @Override
+    public void deleteFriend(long userId, long friendId) {
+        User user = getUser(userId);
+        User friend = getUser(friendId);
+        user.deleteFriend(friendId);
+        friend.editFriendshipStatus(userId);
+        edit(user, userId);
+        edit(friend, friendId);
+    }
+
+    @Override
+    public void addFriend(long userId, long friendId) {
+        User user = getUser(userId);
+        User friend = getUser(friendId);
+        user.addFriend(friendId);
+        if (friend.getFriends().contains(userId)) {
+            friend.editFriendshipStatus(userId);
+            user.editFriendshipStatus(friendId);
+        }
+    }
+
+    @Override
+    public Collection<User> getFriends(long id) {
+        return getUsers(getUser(id).getFriends());
+    }
+
+    @Override
+    public Collection<User> getMutualFriends(long id1, long id2) {
+        Collection<User> friends1 = getFriends(id1);
+        Collection<User> friends2 = getFriends(id2);
+        return friends1.stream().filter(friends2::contains).toList();
     }
 }

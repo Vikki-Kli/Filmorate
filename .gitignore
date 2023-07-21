@@ -20,6 +20,7 @@ target/
 *.ipr
 filmorate.pdf
 filmorate.sql
+db
 
 
 ### NetBeans ###

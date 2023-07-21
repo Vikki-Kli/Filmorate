@@ -51,8 +51,7 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
-    @Override
-    public Collection<User> getUsers(Collection<Long> friendsId) {
+    private Collection<User> getUsers(Collection<Long> friendsId) {
         return friendsId.stream().map(users::get).toList();
     }
 

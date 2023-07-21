@@ -10,8 +10,7 @@ public interface UserStorage {
     Collection<User> findAll();
     User create(User user);
     User edit(User user, long id);
-    User getUser(long id);
-    Collection<User> getUsers(Collection<Long> idCollection);
+    User getUser(long id) throws NoSuchUserException;
     void deleteUser(long id);
     void deleteFriend(long userId, long friendId);
     void addFriend(long userId, long friendId);

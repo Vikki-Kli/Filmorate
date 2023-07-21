@@ -28,7 +28,7 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sqlUsers, (rs, rowNum) -> makeUser(rs));
     }
 
-    private User makeUser(ResultSet rs) throws SQLException, NoSuchUserException {
+    private User makeUser(ResultSet rs) throws SQLException {
         String sqlFriends = "select * from friends where user_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlFriends, rs.getLong("id"));
         Map<Long, Boolean> friends = new HashMap<>();
@@ -47,8 +47,11 @@ public class UserDbStorage implements UserStorage {
     public User create(User user) {
         String sqlCreate = "insert into users(email, login, name, birthday) values(?, ?, ?, ?)";
         jdbcTemplate.update(sqlCreate, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
+
         String sqlGet = "select * from users where login = ?";
-        return jdbcTemplate.query(sqlGet, (rs, rowNum) -> makeUser(rs), user.getLogin()).get(0);
+        User userToReturn = jdbcTemplate.query(sqlGet, (rs, rowNum) -> makeUser(rs), user.getLogin()).get(0);
+        logger.info("User has been created: {}", userToReturn);
+        return userToReturn;
     }
 
     @Override
@@ -56,6 +59,7 @@ public class UserDbStorage implements UserStorage {
         getUser(id);
         String sql = "update users set email = ?, login = ?, name = ?, birthday = ? where id = ?";
         jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
+        logger.info("User has been edited: {}", user);
         return getUser(id);
     }
 
@@ -63,18 +67,18 @@ public class UserDbStorage implements UserStorage {
         getUser(id);
         String sql = "delete from users where id = ?";
         jdbcTemplate.update(sql, id);
+        logger.info("User {} has been deleted", id);
     }
 
     @Override
-    public User getUser(long id) {
+    public User getUser(long id) throws NoSuchUserException {
         String sql = "select * from users where id = ?";
         Optional<User> optionalUser = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id).stream().findFirst();
-        if (optionalUser.isEmpty()) throw new NoSuchUserException("User with id " + id + " has not been found");
+        if (optionalUser.isEmpty()) throw new NoSuchUserException("User " + id + " has not been found");
         else return optionalUser.get();
     }
 
-    @Override
-    public Collection<User> getUsers(Collection<Long> idCollection) {
+    private Collection<User> getUsers(Collection<Long> idCollection) {
         String sql = "select * from users where id in (" + String.join(",", Collections.nCopies(idCollection.size(), "?")) + ")";
         return jdbcTemplate.query(sql, (rs, rn) -> makeUser(rs), idCollection.toArray());
     }
@@ -86,6 +90,7 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlDelete, userId, friendId);
         String sqlEdit = "update friends set status = false where user_id = ? and friend_id = ?";
         jdbcTemplate.update(sqlEdit, friendId, userId);
+        logger.info("User {} removed {} from friends", userId, friendId);
     }
 
     @Override
@@ -98,10 +103,12 @@ public class UserDbStorage implements UserStorage {
             String sqlUpdateTrue = "update friends set status = true where user_id = ? and friend_id = ?";
             jdbcTemplate.update(sqlInsertTrue, userId, friendId);
             jdbcTemplate.update(sqlUpdateTrue, friendId, userId);
+            logger.info("Users {} and {} had become friends", userId, friendId);
         }
         else {
             String sqlInsertFalse = "insert into friends (user_id, friend_id, status) values (?, ?, false)";
             jdbcTemplate.update(sqlInsertFalse, userId, friendId);
+            logger.info("User {} added {} as a friend", userId, friendId);
         }
     }
 

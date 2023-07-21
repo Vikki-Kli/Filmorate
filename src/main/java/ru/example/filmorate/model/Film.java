@@ -20,10 +20,24 @@ public class Film {
     @NotNull
     private LocalDate releaseDate;
     @Positive
-    private Integer duration;
+    private int duration;
     private Collection<Long> likes = new HashSet<>();
     private Collection<Genre> genres = new HashSet<>();
     private Mpa mpa;
+
+    public Film(){
+    }
+
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration, Collection<Long> likes, Collection<Genre> genres, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+        this.genres = genres;
+        this.mpa = mpa;
+    }
 
     public long getId() {
         return id;
@@ -102,7 +116,7 @@ public class Film {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return id == film.id && name.equals(film.name) && Objects.equals(description, film.description) && releaseDate.equals(film.releaseDate) && duration.equals(film.duration);
+        return id == film.id && name.equals(film.name) && Objects.equals(description, film.description) && releaseDate.equals(film.releaseDate) && duration==film.duration;
     }
 
     @Override

@@ -21,6 +21,7 @@ public class User {
     private Map<Long, Boolean> friendship = new HashMap<>();
 
     public User(){}
+
     public User(long id, String email, String login, String name, LocalDate birthday, Map<Long, Boolean> friendship) {
         this.id = id;
         this.email = email;

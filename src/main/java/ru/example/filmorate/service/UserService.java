@@ -1,9 +1,7 @@
 package ru.example.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.example.filmorate.exception.NoSuchUserException;
 import ru.example.filmorate.model.User;
 import ru.example.filmorate.storage.UserStorage;
 
@@ -14,16 +12,15 @@ public class UserService {
 
     private UserStorage userStorage;
 
-    @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    public Collection<User> findAll() throws NoSuchUserException {
+    public Collection<User> findAll() {
         return userStorage.findAll();
     }
 
-    public User getUser(long id) throws NoSuchUserException {
+    public User getUser(long id) {
         return userStorage.getUser(id);
     }
 
@@ -31,27 +28,27 @@ public class UserService {
         return userStorage.create(user);
     }
 
-    public User edit(User user, long id) throws NoSuchUserException {
+    public User edit(User user, long id) {
         return userStorage.edit(user, id);
     }
 
-    public Collection<User> getFriends(long id) throws NoSuchUserException {
+    public Collection<User> getFriends(long id) {
         return userStorage.getFriends(id);
     }
 
-    public Collection<User> getMutualFriends(long id1, long id2) throws NoSuchUserException {
+    public Collection<User> getMutualFriends(long id1, long id2) {
         return userStorage.getMutualFriends(id1, id2);
     }
 
-    public void deleteFriend(long userId, long friendId) throws NoSuchUserException {
+    public void deleteFriend(long userId, long friendId) {
         userStorage.deleteFriend(userId, friendId);
     }
 
-    public void addFriend(long userId, long friendId) throws NoSuchUserException {
+    public void addFriend(long userId, long friendId) {
         userStorage.addFriend(userId, friendId);
     }
 
-    public void delete(long id) throws NoSuchUserException {
+    public void delete(long id) {
         userStorage.deleteUser(id);
     }
 }
